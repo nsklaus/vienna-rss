@@ -312,6 +312,18 @@
                         NSString *descriptionString = [NSString stringWithFormat:@"%@:description", self.mediaPrefix];
                         articleBody =
                             [([itemChildElement elementsForName:descriptionString].firstObject).stringValue mutableCopy];
+                        
+                        // prepend the group's first thumbnail (e.g. YouTube)
+                        NSString *thumbnailString = [NSString stringWithFormat:@"%@:thumbnail", self.mediaPrefix];
+                        NSString *thumbnailURL =
+                            ([[itemChildElement elementsForName:thumbnailString].firstObject attributeForName:@"url"]).stringValue;
+                        if (thumbnailURL.length > 0) {
+                            if (!articleBody) {
+                                articleBody = [NSMutableString string];
+                            }
+                            [articleBody insertString:[NSString stringWithFormat:@"<p><img src=\"%@\"></p>", thumbnailURL]
+                                              atIndex:0];
+                        }
                     }
                     continue;
                 }
