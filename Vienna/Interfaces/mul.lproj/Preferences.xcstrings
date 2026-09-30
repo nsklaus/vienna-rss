@@ -6409,66 +6409,66 @@
       }
     },
     "VQH-xk-s5g.title" : {
-      "comment" : "Class = \"NSButtonCell\"; title = \"Display unread articles with bold font\"; ObjectID = \"VQH-xk-s5g\";",
+      "comment" : "Class = \"NSButtonCell\"; title = \"Display articles with bold font\"; ObjectID = \"VQH-xk-s5g\";",
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "da" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Ved ulæste artikler i fed skrifttype"
           }
         },
         "de" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Ungelesene Artikel in Fettschrift anzeigen"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Display unread articles with bold font"
+            "value" : "Display articles with bold font"
           }
         },
         "es" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Mostrar artículos no leídos con fuente en negrita"
           }
         },
         "fr" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Afficher en gras les articles non lus"
           }
         },
         "it" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Mostra articoli non letti in grassetto"
           }
         },
         "nl" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Geef ongelezen artikelen in vet lettertype weer"
           }
         },
         "pt-PT" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Apresentar a negrito os artigos por ler"
           }
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Visa olästa artiklar med fetstil"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "以粗體字標示未讀的文章"
           }
         }

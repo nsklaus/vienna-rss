@@ -485,7 +485,7 @@
                             </button>
                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="rx3-gW-nqt">
                                 <rect key="frame" x="18" y="79" width="251" height="18"/>
-                                <buttonCell key="cell" type="check" title="Display unread articles with bold font" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="VQH-xk-s5g">
+                                <buttonCell key="cell" type="check" title="Display articles with bold font" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="VQH-xk-s5g">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>

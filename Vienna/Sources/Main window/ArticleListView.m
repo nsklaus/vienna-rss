@@ -166,11 +166,16 @@ static void *VNAArticleListViewObserverContext = &VNAArticleListViewObserverCont
 	style.lineBreakMode = NSLineBreakByTruncatingTail;
 	style.tighteningFactorForTruncation = 0.0;
 	
-    reportCellDict = [[NSMutableDictionary alloc] initWithObjectsAndKeys:style, NSParagraphStyleAttributeName, [NSColor textColor], NSForegroundColorAttributeName, nil];
-    unreadReportCellDict = [[NSMutableDictionary alloc] initWithObjectsAndKeys:style, NSParagraphStyleAttributeName, [NSColor textColor], NSForegroundColorAttributeName, nil];
-    		
-	unreadTopLineDict = [[NSMutableDictionary alloc] initWithObjectsAndKeys:style, NSParagraphStyleAttributeName, [NSColor textColor], NSForegroundColorAttributeName, nil];
-	topLineDict = [[NSMutableDictionary alloc] initWithObjectsAndKeys:style, NSParagraphStyleAttributeName, [NSColor textColor], NSForegroundColorAttributeName, nil];
+    reportCellDict = [[NSMutableDictionary alloc] initWithObjectsAndKeys:style, NSParagraphStyleAttributeName,
+          NSColor.secondaryLabelColor,
+          NSForegroundColorAttributeName, nil];
+    unreadReportCellDict = [[NSMutableDictionary alloc] initWithObjectsAndKeys:style, NSParagraphStyleAttributeName, NSColor.controlAccentColor, NSForegroundColorAttributeName, nil];
+
+    unreadTopLineDict = [[NSMutableDictionary alloc] initWithObjectsAndKeys:style, NSParagraphStyleAttributeName, NSColor.controlAccentColor, NSForegroundColorAttributeName, nil];
+    topLineDict = [[NSMutableDictionary alloc] initWithObjectsAndKeys:style, NSParagraphStyleAttributeName,
+        NSColor.secondaryLabelColor,
+        NSForegroundColorAttributeName, nil];
+    
     middleLineDict = [[NSMutableDictionary alloc] initWithObjectsAndKeys:style, NSParagraphStyleAttributeName, [NSColor systemBlueColor], NSForegroundColorAttributeName, nil];
     linkLineDict = [[NSMutableDictionary alloc] initWithObjectsAndKeys:style, NSParagraphStyleAttributeName, [NSColor systemBlueColor], NSForegroundColorAttributeName, nil];
     bottomLineDict = [[NSMutableDictionary alloc] initWithObjectsAndKeys:style, NSParagraphStyleAttributeName, NSColor.secondaryLabelColor, NSForegroundColorAttributeName, nil];
@@ -538,10 +543,10 @@ static void *VNAArticleListViewObserverContext = &VNAArticleListViewObserverCont
 	articleListFont = prefs.articleListFont;
 	articleListUnreadFont = [prefs boolForKey:MAPref_ShowUnreadArticlesInBold] ? [[NSFontManager sharedFontManager] convertWeight:YES ofFont:articleListFont] : articleListFont;
 
-	reportCellDict[NSFontAttributeName] = articleListFont;
+    reportCellDict[NSFontAttributeName] = articleListUnreadFont;
 	unreadReportCellDict[NSFontAttributeName] = articleListUnreadFont;
 
-	topLineDict[NSFontAttributeName] = articleListFont;
+    topLineDict[NSFontAttributeName] = articleListUnreadFont;
 	unreadTopLineDict[NSFontAttributeName] = articleListUnreadFont;
 	middleLineDict[NSFontAttributeName] = articleListFont;
 	linkLineDict[NSFontAttributeName] = articleListFont;
@@ -1092,6 +1097,11 @@ static void *VNAArticleListViewObserverContext = &VNAArticleListViewObserverCont
 	}
 	theArticle = allArticles[rowIndex];
 	NSString * identifier = aTableColumn.identifier;
+    
+    BOOL isEmphasizedSelection = [aTableView isRowSelected:rowIndex]
+        && aTableView.window.isKeyWindow
+        && aTableView.window.firstResponder == aTableView;
+    
 	if ([identifier isEqualToString:MA_Field_Read]) {
 		if (theArticle.isRead) {
 			return nil;
@@ -1180,6 +1190,13 @@ static void *VNAArticleListViewObserverContext = &VNAArticleListViewObserverCont
 			NSString * topString = [NSString stringWithFormat:@"%@", theArticle.title];
 			NSMutableAttributedString * topAttributedString = [[NSMutableAttributedString alloc] initWithString:topString attributes:topLineDictPtr];
 			[topAttributedString fixFontAttributeInRange:NSMakeRange(0u, topAttributedString.length)];
+            
+            if (isEmphasizedSelection) {
+                [topAttributedString addAttribute:NSForegroundColorAttributeName
+                                            value:NSColor.alternateSelectedControlTextColor
+                                            range:NSMakeRange(0u, topAttributedString.length)];
+            }
+            
 			[theAttributedString appendAttributedString:topAttributedString];
 		}
 
@@ -1265,6 +1282,13 @@ static void *VNAArticleListViewObserverContext = &VNAArticleListViewObserverCont
 	
 	theAttributedString = [[NSMutableAttributedString alloc] initWithString:SafeString(cellString) attributes:(theArticle.isRead ? reportCellDict : unreadReportCellDict)];
 	[theAttributedString fixFontAttributeInRange:NSMakeRange(0u, theAttributedString.length)];
+    
+    if (isEmphasizedSelection) {
+        [theAttributedString addAttribute:NSForegroundColorAttributeName
+                                    value:NSColor.alternateSelectedControlTextColor
+                                    range:NSMakeRange(0u, theAttributedString.length)];
+    }
+    
     return theAttributedString;
 }
 
