@@ -44,7 +44,6 @@ NSString * const MAPref_ShowEnclosureBar = @"ShowEnclosureBar";
 
 static CGFloat const VNAMinimumArticleListViewHeight = 160.0;
 static CGFloat const VNAMinimumArticleListViewWidth = 200.0;
-static CGFloat const VNAMinimumArticleTextViewWidth = 360.0;
 
 static void *VNAArticleListViewObserverContext = &VNAArticleListViewObserverContext;
 
@@ -1546,11 +1545,7 @@ static void *VNAArticleListViewObserverContext = &VNAArticleListViewObserverCont
     constrainMaxCoordinate:(CGFloat)proposedMaximumPosition
                ofSubviewAt:(NSInteger)dividerIndex
 {
-    if (splitView.isVertical) {
-        return proposedMaximumPosition - VNAMinimumArticleTextViewWidth;
-    } else {
-        return proposedMaximumPosition;
-    }
+    return proposedMaximumPosition;
 }
 
 @end
