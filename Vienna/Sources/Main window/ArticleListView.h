@@ -48,5 +48,6 @@
 -(void)updateVisibleColumns;
 -(void)saveTableSettings;
 -(void)loadArticleLink:(NSString *) articleLink;
+-(NSView *)previewView;
 
 @end

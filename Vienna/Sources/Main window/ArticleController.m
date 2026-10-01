@@ -202,7 +202,7 @@ static void *VNAArticleControllerObserverContext = &VNAArticleControllerObserver
 	}
     [[NSNotificationCenter defaultCenter] postNotificationName:MA_Notify_ArticleViewChange object:nil];
 
-    self.foldersTree.mainView.nextKeyView = self.mainArticleView;
+    self.foldersTree.mainView.nextKeyView = self.mainArticleView.mainView;
     if (self.selectedArticle == nil) {
         [self.view.window makeFirstResponder:self.foldersTree.mainView];
     } else {
@@ -530,6 +530,11 @@ static void *VNAArticleControllerObserverContext = &VNAArticleControllerObserver
     } else if (self->firstUnreadArticleRequired) {
         [self->mainArticleView selectFirstUnreadInFolder];
         self->firstUnreadArticleRequired = NO;
+    }
+    
+    // Never leave the article list without a selection
+    if (self.selectedArticle == nil) {
+        [self->mainArticleView selectFirstUnreadInFolder];
     }
 
     // To avoid upsetting the current displayed article after a refresh,
@@ -1318,7 +1323,7 @@ static void *VNAArticleControllerObserverContext = &VNAArticleControllerObserver
         // Hook up the Tab ordering so Tab from the search field goes to the
         // article view.
         self.foldersTree.mainView.nextKeyView = filterBarViewController.view;
-        filterBarViewController.nextKeyView = self.mainArticleView;
+        filterBarViewController.nextKeyView = self.mainArticleView.mainView;
 
         // Set focus only if this was user initiated
         if (doAnimate) {
@@ -1328,7 +1333,7 @@ static void *VNAArticleControllerObserverContext = &VNAArticleControllerObserver
         filterBarViewController.visible = NO;
 
         // Fix up the tab ordering
-        self.foldersTree.mainView.nextKeyView = self.mainArticleView;
+        self.foldersTree.mainView.nextKeyView = self.mainArticleView.mainView;
 
         if (doAnimate) {
             // Clear the filter, otherwise we end up with no way remove it!
@@ -1366,60 +1371,6 @@ static void *VNAArticleControllerObserverContext = &VNAArticleControllerObserver
         default:
             return true;
     }
-}
-
-// MARK: Event handling
-
-- (BOOL)vna_canHandleEvent:(NSEvent *)event
-{
-    if (event.type == NSEventTypeKeyDown && event.characters.length == 1) {
-        unichar keyChar = [event.characters characterAtIndex:0];
-        if (keyChar == 'f' || keyChar == 'F' ||
-            keyChar == 'm' || keyChar == 'M' ||
-            keyChar == 'r' || keyChar == 'R' ||
-            keyChar == 'u' || keyChar == 'U' ||
-            keyChar == '<' || keyChar == ',' ||
-            keyChar == '>' || keyChar == '.') {
-            return YES;
-        }
-    }
-    return [super vna_canHandleEvent:event];
-}
-
-- (BOOL)vna_handleEvent:(NSEvent *)event
-{
-    if (event.type != NSEventTypeKeyDown && event.characters.length != 1) {
-        return [super vna_handleEvent:event];
-    }
-    unichar keyChar = [event.characters characterAtIndex:0];
-    if (keyChar == 'f' || keyChar == 'F') {
-        VNAFilterBarViewController *filterBarViewController = self.filterBarViewController;
-        if (filterBarViewController.isVisible) {
-            [filterBarViewController beginInteraction];
-        } else {
-            [self setFilterBarState:YES withAnimation:YES];
-            Preferences.standardPreferences.showFilterBar = YES;
-        }
-        return YES;
-    } else if (keyChar == 'm' || keyChar == 'M') {
-        [self toggleFlag:nil];
-        return YES;
-    } else if (keyChar == 'r' || keyChar == 'R' ||
-               keyChar == 'u' || keyChar == 'U') {
-        Article *article = self.selectedArticle;
-        if (article && !Database.sharedManager.readOnly) {
-            [self markReadByArray:self.markedArticleRange
-                         readFlag:!article.isRead];
-        }
-        return YES;
-    } else if (keyChar == '<' || keyChar == ',') {
-        [self goBack:nil];
-        return YES;
-    } else if (keyChar == '>' || keyChar == '.') {
-        [self goForward:nil];
-        return YES;
-    }
-    return [super vna_handleEvent:event];
 }
 
 // MARK: Key-value observation

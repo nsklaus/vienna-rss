@@ -46,6 +46,7 @@
 #import "NSURL+CaminoExtensions.h"
 #import "PluginManager.h"
 #import "ArticleController.h"
+#import "ArticleListView.h"
 #import "FoldersTree.h"
 #import "Article.h"
 #import "TreeNode.h"
@@ -1694,10 +1695,21 @@ withReplyEvent:(NSAppleEventDescriptor *)replyEvent
 
 #pragma mark Key Listener
 
-/* handleKeyDown [delegate]
- * Support special key codes. If we handle the key, return YES otherwise
- * return NO to allow the framework to pass it on for default processing.
- */
+// Returns the first view inside `view` (or `view` itself) that can take the focus.
+static NSView *VNAFirstFocusableView(NSView *view)
+{
+    if (view == nil || view.acceptsFirstResponder) {
+        return view;
+    }
+    for (NSView *subview in view.subviews) {
+        NSView *found = VNAFirstFocusableView(subview);
+        if (found) {
+            return found;
+        }
+    }
+    return nil;
+}
+
 -(BOOL)handleKeyDown:(NSEvent *)event
 {
     if (event.type != NSEventTypeKeyDown && event.characters.length != 1) {
@@ -1705,112 +1717,53 @@ withReplyEvent:(NSAppleEventDescriptor *)replyEvent
     }
     unichar keyChar = [event.characters characterAtIndex:0];
     NSEventModifierFlags flags = event.modifierFlags;
-	switch (keyChar) {
-		case NSLeftArrowFunctionKey:
-            if ((flags & NSEventModifierFlagCommand) && (flags & NSEventModifierFlagOption)) {
-                [self.mainWindow selectPreviousTab:nil];
-                return YES;
-			} else {
-				if (self.mainWindow.firstResponder == ((NSView<BaseView> *)self.browser.primaryTab.view).mainView) {
-					[self.mainWindow makeFirstResponder:self.foldersTree.mainView];
-					return YES;
-				}
-			}
-			return NO;
-			
-		case NSRightArrowFunctionKey:
-            if ((flags & NSEventModifierFlagCommand) && (flags & NSEventModifierFlagOption)) {
-                [self.mainWindow selectNextTab:nil];
-                return YES;
-			} else {
-				if (self.mainWindow.firstResponder == self.foldersTree.mainView) {
-					[self.browser switchToPrimaryTab];
-					if (self.selectedArticle == nil) {
-						[self.articleController ensureSelectedArticle];
-					}
-					[self.mainWindow makeFirstResponder:(self.selectedArticle != nil) ? ((NSView<BaseView> *)self.browser.primaryTab.view).mainView : self.foldersTree.mainView];
-					return YES;
-				}
-			}
-			return NO;
-			
-		case NSDeleteFunctionKey:
-		case NSDeleteCharacter:
-			if (self.mainWindow.firstResponder == self.foldersTree.mainView) {
-				[self deleteFolder:self];
-				return YES;
-			} else if (self.browser.activeTab == nil) { // make sure we are in the articles tab
-				[self.articleController delete:self];
-				return YES;
-			}
-			return NO;
-			
-		case 'h':
-		case 'H':
-			[self setFocusToSearchField:self];
-			return YES;
-			
-		case 'k':
-		case 'K':
-			[self markAllRead:self];
-			return YES;
-			
-		case 'b':
-		case 'B':
-			[self viewFirstUnread:self];
-			return YES;
+    BOOL commandOption = (flags & NSEventModifierFlagCommand) && (flags & NSEventModifierFlagOption);
+    if (commandOption && keyChar == NSLeftArrowFunctionKey) {
+        [self.mainWindow selectPreviousTab:nil];
+        return YES;
+    }
+    if (commandOption && keyChar == NSRightArrowFunctionKey) {
+        [self.mainWindow selectNextTab:nil];
+        return YES;
+    }
 
-		case 'n':
-		case 'N':
-			[self viewNextUnread:self];
-			return YES;
+    // Tab / Shift-Tab: cycle the focus through subscriptions, articles and preview
+    BOOL otherModifiers = flags & (NSEventModifierFlagCommand | NSEventModifierFlagControl | NSEventModifierFlagOption);
+    if ((keyChar == NSTabCharacter || keyChar == NSBackTabCharacter) && !otherModifiers && self.browser.activeTab == nil) {
+        NSView *folders = self.foldersTree.mainView;
+        NSView *articles = self.articleController.mainArticleView.mainView;
+        NSView *previewContainer = nil;
+        NSView<ArticleBaseView> *mainArticleView = self.articleController.mainArticleView;
+        if ([mainArticleView isKindOfClass:[ArticleListView class]]) {
+            previewContainer = [(ArticleListView *)mainArticleView previewView];
+        }
+        NSView *preview = VNAFirstFocusableView(previewContainer);
 
-		case 'y':
-		case 'Y':
-			[self viewArticlesTab:self];
-			return YES;
-			
-		case 's':
-		case 'S':
-			[self skipFolder:self];
-			return YES;
-			
-		case NSEnterCharacter:
-		case NSCarriageReturnCharacter:
-			if (self.mainWindow.firstResponder == self.foldersTree.mainView) {
-                if (flags & NSEventModifierFlagOption) {
-					[self viewSourceHomePageInAlternateBrowser:self];
-				} else {
-					[self viewSourceHomePage:self];
-				}
-				return YES;
-			} else {
-                if (flags & NSEventModifierFlagOption) {
-					[self viewArticlePagesInAlternateBrowser:self];
-				} else {
-					[self viewArticlePages:self];
-				}
-				return YES;
-			}
-			return NO;
-			
-		case ' ': //SPACE
-		{
-            id<Tab> activeBrowserTab = self.browser.activeTab;
-			
-            if (activeBrowserTab == nil) {
-                //we are in the article view
-                [self.mainWindow makeFirstResponder:((NSView<BaseView> *)self.browser.primaryTab.view).mainView];
-                if (flags & NSEventModifierFlagShift) {
-                    [self.articleController.mainArticleView scrollUpDetailsOrGoBack];
-				} else {
-                    [self.articleController.mainArticleView scrollDownDetailsOrNextUnread];
-				}
-				return YES;
-			}
-		}
-	}
-	return NO;
+        NSMutableArray<NSView *> *panes = [NSMutableArray arrayWithObjects:folders, articles, nil];
+        NSMutableArray<NSView *> *containers = [NSMutableArray arrayWithObjects:folders, articles, nil];
+        if (preview) {
+            [panes addObject:preview];
+            [containers addObject:previewContainer];
+        }
+
+        NSInteger current = 0;
+        NSResponder *responder = self.mainWindow.firstResponder;
+        for (NSInteger i = 0; i < (NSInteger)containers.count; ++i) {
+            if ([responder isKindOfClass:[NSView class]] && [(NSView *)responder isDescendantOf:containers[i]]) {
+                current = i;
+                break;
+            }
+        }
+        NSInteger count = (NSInteger)panes.count;
+        NSInteger step = (keyChar == NSTabCharacter) ? 1 : -1;
+        NSView *target = panes[(current + step + count) % count];
+        [self.mainWindow makeFirstResponder:target];
+        if (target == articles && self.articleController.selectedArticle == nil) {
+            [self.articleController ensureSelectedArticle];
+        }
+        return YES;
+    }
+    return NO;
 }
 
 /* toolbarItemWithIdentifier

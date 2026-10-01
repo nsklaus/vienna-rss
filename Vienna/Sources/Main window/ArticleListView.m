@@ -636,6 +636,14 @@ static void *VNAArticleListViewObserverContext = &VNAArticleListViewObserverCont
 	[self refreshArticleAtCurrentRow];
 }
 
+/* previewView
+ * Return the view that contains the article preview.
+ */
+-(NSView *)previewView
+{
+    return self.articleTextView;
+}
+
 /* mainView
  * Return the primary view of this view.
  */
