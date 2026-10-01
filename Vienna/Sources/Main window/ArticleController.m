@@ -1138,6 +1138,18 @@ static void *VNAArticleControllerObserverContext = &VNAArticleControllerObserver
     }
 }
 
+/* toggleRead
+ * Toggle the read/unread state of the selected articles,
+ * based on the state of the first selected article.
+ */
+- (IBAction)toggleRead:(nullable id)sender
+{
+    Article *article = self.selectedArticle;
+    if (article && !Database.sharedManager.readOnly) {
+        [self markReadByArray:self.markedArticleRange readFlag:!article.isRead];
+    }
+}
+
 /* toggleFlag
  * Toggle the flagged/unflagged state of the selected article
  */
@@ -1460,6 +1472,17 @@ static void *VNAArticleControllerObserverContext = &VNAArticleControllerObserver
                 menuItem.title = NSLocalizedString(@"Mark Unflagged", nil);
             } else {
                 menuItem.title = NSLocalizedString(@"Mark Flagged", nil);
+            }
+            return !Database.sharedManager.readOnly;
+        }
+        return NO;
+    } else if (action == @selector(toggleRead:)) {
+        Article *selectedArticle = self.selectedArticle;
+        if (selectedArticle) {
+            if (selectedArticle.isRead) {
+                menuItem.title = NSLocalizedString(@"Mark Unread", nil);
+            } else {
+                menuItem.title = NSLocalizedStringWithDefaultValue(@"markRead.menuItem", nil, NSBundle.mainBundle, @"Mark Read", @"Title of a menu item");
             }
             return !Database.sharedManager.readOnly;
         }

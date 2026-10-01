@@ -654,20 +654,20 @@ CA
                                                 <action selector="toggleFlag:" target="Ady-hI-5gd" id="XQZ-kF-iNW"/>
                                             </connections>
                                         </menuItem>
-                                        <menuItem title="Next Unread" keyEquivalent="u" id="344">
+                                        <menuItem title="Mark Read" keyEquivalent="u" id="pKl-6f-Hlc">
+                                            <connections>
+                                                <action selector="toggleRead:" target="Ady-hI-5gd" id="hcC-jq-vKm"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Next Unread" keyEquivalent="U" id="344">
                                             <connections>
                                                 <action selector="viewNextUnread:" target="Ady-hI-5gd" id="zjw-pE-qp9"/>
                                             </connections>
                                         </menuItem>
-                                        <menuItem title="Mark Read" keyEquivalent="U" id="pKl-6f-Hlc">
-                                            <connections>
-                                                <action selector="markAsRead:" target="Ady-hI-5gd" id="hcC-jq-vKm"/>
-                                            </connections>
-                                        </menuItem>
-                                        <menuItem title="Mark Unread" keyEquivalent="U" id="789">
+                                        <menuItem title="First Unread" keyEquivalent="u" id="Kls-Fu-Unr">
                                             <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
                                             <connections>
-                                                <action selector="markAsUnread:" target="Ady-hI-5gd" id="UTn-Gi-s5P"/>
+                                                <action selector="viewFirstUnread:" target="Ady-hI-5gd" id="Kls-Fu-Act"/>
                                             </connections>
                                         </menuItem>
                                         <menuItem title="Restore Article" keyEquivalent="O" id="1044">
@@ -676,13 +676,13 @@ CA
                                             </connections>
                                         </menuItem>
                                         <menuItem isSeparatorItem="YES" id="308"/>
-                                        <menuItem title="Open Article Page" id="1040">
+                                        <menuItem title="Open Article Page" keyEquivalent="o" id="1040">
                                             <connections>
                                                 <action selector="viewArticlePages:" target="Ady-hI-5gd" id="ChF-ZC-cmD"/>
                                             </connections>
                                         </menuItem>
-                                        <menuItem title="Open Article Page in External Browser" alternate="YES" id="1067">
-                                            <modifierMask key="keyEquivalentModifierMask" option="YES"/>
+                                        <menuItem title="Open Article Page in External Browser" alternate="YES" keyEquivalent="o" id="1067">
+                                            <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
                                             <connections>
                                                 <action selector="viewArticlePagesInAlternateBrowser:" target="Ady-hI-5gd" id="ypC-pj-XY6"/>
                                             </connections>

@@ -92,6 +92,7 @@
 - (IBAction)toggleFlag:(/*nullable*/ id)sender;
 - (IBAction)markAsRead:(/*nullable*/ id)sender;
 - (IBAction)markAsUnread:(/*nullable*/ id)sender;
+- (IBAction)toggleRead:(/*nullable*/ id)sender;
 - (IBAction)delete:(/*nullable*/ id)sender;
 - (IBAction)restore:(/*nullable*/ id)sender;
 - (IBAction)downloadEnclosure:(/*nullable*/ id)sender;

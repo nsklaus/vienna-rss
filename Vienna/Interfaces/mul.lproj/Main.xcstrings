@@ -8832,7 +8832,7 @@
     },
     "789.title" : {
       "comment" : "Class = \"NSMenuItem\"; title = \"Mark Unread\"; ObjectID = \"789\";",
-      "extractionState" : "extracted_with_value",
+      "extractionState" : "stale",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -19872,6 +19872,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "隱藏附檔工具列"
+          }
+        }
+      }
+    },
+    "Kls-Fu-Unr.title" : {
+      "comment" : "Class = \"NSMenuItem\"; title = \"First Unread\"; ObjectID = \"Kls-Fu-Unr\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "First Unread"
           }
         }
       }
